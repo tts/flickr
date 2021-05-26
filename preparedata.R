@@ -54,41 +54,37 @@ write_rds(geocoded4, "flickr_geocoded4.RDS")
 geocoded1 <- geocoded1 %>% 
   select(title,tags,
          datetaken,count_views,count_faves,
-         latitude,longitude,starts_with("url_"),
+         latitude,longitude,url_m, url_z, height_m, width_m,
          town,municipality,state_district,state,region,country,country_code)
 geocoded2 <- geocoded2 %>% 
   select(title,tags,
          datetaken,count_views,count_faves,
-         latitude,longitude,starts_with("url_"),
+         latitude,longitude,url_m, url_z, height_m, width_m,
          town,municipality,state_district,state,region,country,country_code)
 geocoded3 <- geocoded3 %>% 
   select(title,tags,
          datetaken,count_views,count_faves,
-         latitude,longitude,starts_with("url_"),
+         latitude,longitude,url_m, url_z, height_m, width_m,
          town,municipality,state_district,state,region,country,country_code)
 geocoded4 <- geocoded4 %>% 
   select(title,tags,
          datetaken,count_views,count_faves,
-         latitude,longitude,starts_with("url_"),
+         latitude,longitude,url_m, url_z, height_m, width_m,
          town,municipality,state_district,state,region,country,country_code)
 
 geocoded <- rbind(geocoded1, geocoded2, geocoded3, geocoded4)
 write_rds(geocoded, "flickr_geocoded.RDS")
 
-# Add popup link to photo
 geo_coded <- geocoded %>% 
-  mutate(popup_medium = paste("<a href='", geocoded$url_z,"'>", geocoded$url_z, "</a>"),
-         popup_small = paste("<a href='", geocoded$url_m,"'>", geocoded$url_m, "</a>"))
-
-write_rds(geo_coded, "flickr_geo_coded.RDS")
+  mutate(popup_img = paste("<a href='", geocoded$url_z,"'><img src='", geocoded$url_m, "'></a>"),
+         orientation = ifelse(height_m > width_m, "portrait", "landscape")) %>% 
+  select(-starts_with("url_"))
 
 # Remove big objects
 rm(geocoded1,geocoded2,geocoded3,geocoded4,
    geotagged1,geotagged2,geotagged3,geotagged4,
-   geotagged, geocoded)
+   geotagged,geocoded)
 gc()
-
-#geo_coded <- readRDS("flickr_geo_coded.RDS")
 
 # Clean names
 geo_coded <- geo_coded %>% 
@@ -106,10 +102,11 @@ geo_coded <- geo_coded %>%
                                                                                                 ifelse(country == "Deutschland", "Germany",
                                                                                                        ifelse(country == "Nederland", "The Nederlands",
                                                                                                               ifelse(country == "Suomi / Finland", "Finland", country)))))))))))))))
-# One row without a country name for a reason
-geo_coded$country <- with(geo_coded, replace(country, 
-  popup_medium == "<a href=' https://live.staticflickr.com/4230/34534378343_bc18f47537_z.jpg '> https://live.staticflickr.com/4230/34534378343_bc18f47537_z.jpg </a>",
-  "International waters")) 
+# One row without a country name - for a reason
+geo_coded$country <- with(geo_coded, 
+                          replace(country, 
+                                  datetaken == "2017-06-16 08:24:49", 
+                                  "International waters")) 
 
 # Stats
 c_stats <- geo_coded %>% 
