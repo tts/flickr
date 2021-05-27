@@ -18,7 +18,7 @@ time.taken # ~1 min
 
 write_rds(geotagged, "flickr_geotagged.RDS")
 
-# Split file to prevent data loss in sudden wifi hiccups
+# Split file to prevent data loss in sudden wifi hiccups when using the OSM API
 geotagged1 <- geotagged[1:1000,]
 geotagged2 <- geotagged[1001:2000,]
 geotagged3 <- geotagged[2001:3000,]
@@ -54,30 +54,29 @@ write_rds(geocoded4, "flickr_geocoded4.RDS")
 geocoded1 <- geocoded1 %>% 
   select(title,tags,
          datetaken,count_views,count_faves,
-         latitude,longitude,url_m, url_z, height_m, width_m,
+         latitude,longitude,url_q, url_z, 
          town,municipality,state_district,state,region,country,country_code)
 geocoded2 <- geocoded2 %>% 
   select(title,tags,
          datetaken,count_views,count_faves,
-         latitude,longitude,url_m, url_z, height_m, width_m,
+         latitude,longitude,url_q, url_z, 
          town,municipality,state_district,state,region,country,country_code)
 geocoded3 <- geocoded3 %>% 
   select(title,tags,
          datetaken,count_views,count_faves,
-         latitude,longitude,url_m, url_z, height_m, width_m,
+         latitude,longitude,url_q, url_z, 
          town,municipality,state_district,state,region,country,country_code)
 geocoded4 <- geocoded4 %>% 
   select(title,tags,
          datetaken,count_views,count_faves,
-         latitude,longitude,url_m, url_z, height_m, width_m,
+         latitude,longitude,url_q, url_z, 
          town,municipality,state_district,state,region,country,country_code)
 
 geocoded <- rbind(geocoded1, geocoded2, geocoded3, geocoded4)
 write_rds(geocoded, "flickr_geocoded.RDS")
 
 geo_coded <- geocoded %>% 
-  mutate(popup_img = paste("<a href='", geocoded$url_z,"'><img src='", geocoded$url_m, "'></a>"),
-         orientation = ifelse(height_m > width_m, "portrait", "landscape")) %>% 
+  mutate(popup_img = paste("<a href='", geocoded$url_z,"'><img src='", geocoded$url_q, "'></a>")) %>% 
   select(-starts_with("url_"))
 
 # Remove big objects
@@ -86,29 +85,30 @@ rm(geocoded1,geocoded2,geocoded3,geocoded4,
    geotagged,geocoded)
 gc()
 
-# Clean names
+# Clean, and replace native names with English
 geo_coded <- geo_coded %>% 
-  mutate(country = ifelse(country == "中国", "Hong Kong", 
-                          ifelse(country == "République démocratique du Congo", "Uganda", # at the border
-                                 ifelse(country == "Madagasikara", "Madagascar",
-                                        ifelse(country == "Luzon", "The Philippines",
-                                               ifelse(country == "ኢትዮጵያ", "Ethiopia",
-                                                      ifelse(country_code == "cz", "Czechia",
-                                                             ifelse(country == "Eesti", "Estonia", 
-                                                                    ifelse(country == "España", "Spain",
-                                                                           ifelse(country == "Italia", "Italy",
-                                                                                  ifelse(country == "Sverige", "Sweden",
-                                                                                         ifelse(country == "Norge", "Norway",
-                                                                                                ifelse(country == "Deutschland", "Germany",
-                                                                                                       ifelse(country == "Nederland", "The Nederlands",
-                                                                                                              ifelse(country == "Suomi / Finland", "Finland", country)))))))))))))))
-# One row without a country name - for a reason
-geo_coded$country <- with(geo_coded, 
-                          replace(country, 
-                                  datetaken == "2017-06-16 08:24:49", 
-                                  "International waters")) 
+  mutate(country = case_when(
+    country == "中国" ~ "Hong Kong",
+    country == "République démocratique du Congo" ~ "Uganda",
+    country == "Brasil" ~ "Brazil",
+    country == "Madagasikara" ~ "Madagascar",
+    country == "Luzon" ~ "The Philippines",
+    country == "ኢትዮጵያ" ~ "Ethiopia",
+    country_code == "cz" ~ "Czechia",
+    country == "Eesti" ~ "Estonia", 
+    country == "España" ~ "Spain",
+    country == "Italia" ~ "Italy",
+    country == "Sverige" ~ "Sweden",
+    country == "Norge" ~ "Norway",
+    country == "Deutschland" ~ "Germany",
+    country == "Nederland" ~ "The Nederlands",
+    country == "Suomi / Finland" ~ "Finland", 
+    datetaken == "2017-06-16 08:24:49" ~ "International waters",
+    TRUE ~ country
+    ))
+    
 
-# Stats
+# The number of photos by country
 c_stats <- geo_coded %>% 
   group_by(country) %>% 
   summarise(count = n()) %>% 
