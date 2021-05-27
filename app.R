@@ -38,7 +38,7 @@ shiny::shinyApp(
   
   server = function(input, output, session) {
     
-    output$title <- renderUI(HTML("<b>My geotagged Flickr photos since June 2005</b> | Tuija Sonkkila | 2021-05-27 | <a href='https://github.com/tts/flickr'>https://github.com/tts/flickr</a>"))
+    output$title <- renderUI(HTML("<b>My geotagged Flickr photos (37% of all) since June 2005</b> | Tuija Sonkkila | 2021-05-27 | <a href='https://github.com/tts/flickr'>https://github.com/tts/flickr</a>"))
     
     country_selected <- reactive({
       if(input$country == "All") {
