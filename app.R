@@ -10,6 +10,7 @@ countries <- as.vector(sort(unique(data$country)))
 shiny::shinyApp(
   
   ui = bootstrapPage(
+    title = "My geotagged Flickr photos",
     tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
     tags$style(
       'div.leaflet-popup-content-wrapper {
@@ -30,9 +31,14 @@ shiny::shinyApp(
                   selectInput(inputId = "country",
                               label = "Country",
                               choices = c("All", countries),
-                              selected = NULL))),
+                              selected = NULL)),
+    absolutePanel(top = 20, left = 100,
+                  draggable = TRUE,
+                  htmlOutput(outputId = "title"))),
   
   server = function(input, output, session) {
+    
+    output$title <- renderUI(HTML("<b>My geotagged Flickr photos since June 2005</b> | Tuija Sonkkila | 2021-05-27 | <a href='https://github.com/tts/flickr'>https://github.com/tts/flickr</a>"))
     
     country_selected <- reactive({
       if(input$country == "All") {
