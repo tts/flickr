@@ -106,6 +106,11 @@ geo_coded <- geo_coded %>%
     datetaken == "2017-06-16 08:24:49" ~ "International waters",
     TRUE ~ country
     ))
+    # viewed = case_when(
+    #   count_views >= 1 & count_views <= 50 ~ "s",
+    #   count_views > 50 & count_views <= 100 ~ "m",
+    #   count_views > 100 ~ "l"
+    # ))
     
 
 # The number of photos by country
@@ -113,5 +118,10 @@ c_stats <- geo_coded %>%
   group_by(country) %>% 
   summarise(count = n()) %>% 
   arrange(desc(count))
+
+# v_stats <- geo_coded %>% 
+#   group_by(viewed) %>% 
+#   summarise(count = n()) %>% 
+#   arrange(desc(count))
 
 write_rds(geo_coded, "flickr_geo_coded.RDS")
