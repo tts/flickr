@@ -45,10 +45,10 @@ geocoded4 <- geotagged4 %>%
                   address = address_found, full_results = TRUE)
 write_rds(geocoded4, "flickr_geocoded4.RDS")
 
-# geocoded1 <- readRDS("flickr_geocoded1.RDS")
-# geocoded2 <- readRDS("flickr_geocoded2.RDS")
-# geocoded3 <- readRDS("flickr_geocoded3.RDS")
-# geocoded4 <- readRDS("flickr_geocoded4.RDS")
+geocoded1 <- readRDS("flickr_geocoded1.RDS")
+geocoded2 <- readRDS("flickr_geocoded2.RDS")
+geocoded3 <- readRDS("flickr_geocoded3.RDS")
+geocoded4 <- readRDS("flickr_geocoded4.RDS")
 
 # Select columns and combine all
 geocoded1 <- geocoded1 %>% 
@@ -76,7 +76,8 @@ geocoded <- rbind(geocoded1, geocoded2, geocoded3, geocoded4)
 write_rds(geocoded, "flickr_geocoded.RDS")
 
 geo_coded <- geocoded %>% 
-  mutate(popup_img = paste("<a href='", geocoded$url_z,"'><img src='", geocoded$url_q, "'></a>")) %>% 
+  mutate(popup_img = paste("<a href='", geocoded$url_z,"'><img src='", geocoded$url_q, "'></a>"),
+         tags = gsub("uploaded:by=flickrmobile flickriosapp:filter=nofilter", "", tags)) %>% 
   select(-starts_with("url_"))
 
 # Remove big objects
@@ -106,22 +107,11 @@ geo_coded <- geo_coded %>%
     datetaken == "2017-06-16 08:24:49" ~ "International waters",
     TRUE ~ country
     ))
-    # viewed = case_when(
-    #   count_views >= 1 & count_views <= 50 ~ "s",
-    #   count_views > 50 & count_views <= 100 ~ "m",
-    #   count_views > 100 ~ "l"
-    # ))
     
-
 # The number of photos by country
 c_stats <- geo_coded %>% 
   group_by(country) %>% 
   summarise(count = n()) %>% 
   arrange(desc(count))
-
-# v_stats <- geo_coded %>% 
-#   group_by(viewed) %>% 
-#   summarise(count = n()) %>% 
-#   arrange(desc(count))
 
 write_rds(geo_coded, "flickr_geo_coded.RDS")
