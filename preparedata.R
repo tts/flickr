@@ -45,10 +45,10 @@ geocoded4 <- geotagged4 %>%
                   address = address_found, full_results = TRUE)
 write_rds(geocoded4, "flickr_geocoded4.RDS")
 
-geocoded1 <- readRDS("flickr_geocoded1.RDS")
-geocoded2 <- readRDS("flickr_geocoded2.RDS")
-geocoded3 <- readRDS("flickr_geocoded3.RDS")
-geocoded4 <- readRDS("flickr_geocoded4.RDS")
+# geocoded1 <- readRDS("flickr_geocoded1.RDS")
+# geocoded2 <- readRDS("flickr_geocoded2.RDS")
+# geocoded3 <- readRDS("flickr_geocoded3.RDS")
+# geocoded4 <- readRDS("flickr_geocoded4.RDS")
 
 # Select columns and combine all
 geocoded1 <- geocoded1 %>% 
