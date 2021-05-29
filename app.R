@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyMobile)
 library(leaflet)
+library(leaflet.extras)
 library(tidyverse)
 library(htmltools)
 
@@ -152,15 +153,21 @@ shiny::shinyApp(
     output$map <- renderLeaflet({
       
         m <- leaflet(country_selected()) %>%
-          addTiles() 
-        
-        m <- m %>% 
-          addMarkers(clusterOptions = TRUE, 
+          addTiles() %>% 
+          addMarkers(label = ~paste0(title, " ", tags),
                      popup = ~paste0(popup_img,
                                      "<b>Taken at:</b> ", country_selected()$datetaken, 
                                      "<br><b>Views:</b> ", country_selected()$count_views,
                                      "<br><b>Faves:</b> ", country_selected()$count_faves),
-                     options = popupOptions(closeButton = FALSE))
+                     options = popupOptions(closeButton = FALSE),
+                     # To change the size of the cluster marker based on the number of items within it, see
+                     # https://raw.githubusercontent.com/Vicellken/shinyapp.swims/f04a14ea5a93668b5636bf7b75241813ae6ff237/app.R
+                     group = "Cluster",
+                     clusterOptions = markerClusterOptions(riseOnHover = TRUE, opacity = 0.75)) %>%
+          addSearchFeatures(targetGroups = "Cluster", options = searchFeaturesOptions(
+            zoom = 23, openPopup = TRUE, firstTipSubmit = TRUE,
+            autoCollapse = FALSE, hideMarkerOnCollapse = TRUE
+      ))
         
         m
       
