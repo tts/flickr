@@ -165,7 +165,7 @@ shiny::shinyApp(
                      group = "Cluster",
                      clusterOptions = markerClusterOptions(riseOnHover = TRUE, opacity = 0.75)) %>%
           addSearchFeatures(targetGroups = "Cluster", options = searchFeaturesOptions(
-            zoom = 23, openPopup = TRUE, firstTipSubmit = TRUE,
+            zoom = 23, openPopup = TRUE, firstTipSubmit = TRUE, textPlaceholder = "Type word(s)",
             autoCollapse = FALSE, hideMarkerOnCollapse = TRUE
       ))
         
