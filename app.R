@@ -174,9 +174,8 @@ shiny::shinyApp(
     })
   
     
-    
     output$note <- renderText({
-      "Click the blue marker to see a small size photo, and basic info. Clicking the photo shows the photo in bigger size."
+      "Click the blue marker to see a small size photo, and basic info. Clicking the photo (and opening the link in a new tab), shows the photo in bigger size."
     })
     
     
