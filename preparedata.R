@@ -45,10 +45,10 @@ geocoded4 <- geotagged4 %>%
                   address = address_found, full_results = TRUE)
 write_rds(geocoded4, "flickr_geocoded4.RDS")
 
-# geocoded1 <- readRDS("flickr_geocoded1.RDS")
-# geocoded2 <- readRDS("flickr_geocoded2.RDS")
-# geocoded3 <- readRDS("flickr_geocoded3.RDS")
-# geocoded4 <- readRDS("flickr_geocoded4.RDS")
+geocoded1 <- readRDS("flickr_geocoded1.RDS")
+geocoded2 <- readRDS("flickr_geocoded2.RDS")
+geocoded3 <- readRDS("flickr_geocoded3.RDS")
+geocoded4 <- readRDS("flickr_geocoded4.RDS")
 
 # Select columns and combine all
 geocoded1 <- geocoded1 %>% 
@@ -77,7 +77,10 @@ write_rds(geocoded, "flickr_geocoded.RDS")
 
 geo_coded <- geocoded %>% 
   mutate(popup_img = paste("<a href='", geocoded$url_z,"'><img src='", geocoded$url_q, "'></a>"),
-         tags = gsub("uploaded:by=flickrmobile flickriosapp:filter=nofilter", "", tags)) %>% 
+         tags = gsub("uploaded:by=flickrmobile flickriosapp:filter=nofilter", "", tags),
+         tags = gsub("originalfilter uploaded:by=flickrmobile flickriosapp:filter=original", "", tags),
+         tags = gsub("uploaded:by=flickrmobile flickriosapp:filter=orca orcafilter", "", tags),
+         title = gsub("P[0-9]+", "", title)) %>% 
   select(-starts_with("url_"))
 
 # Remove big objects
